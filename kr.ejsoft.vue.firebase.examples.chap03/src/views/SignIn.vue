@@ -28,14 +28,7 @@
                 name="login"
                 prepend-icon="mdi-account"
                 type="text"
-              ></v-text-field>
-
-              <v-text-field
-                id="password"
-                label="Password"
-                name="password"
-                prepend-icon="mdi-lock"
-                type="password"
+                v-model="email"
               ></v-text-field>
             </v-form>
           </v-card-text>
@@ -58,7 +51,6 @@ import firebase from 'firebase'
 export default {
   data: () => ({
       email : "",
-      password : "",
       isSignin: false,
   }),
   created () {
@@ -79,27 +71,58 @@ export default {
   },
   methods: {
     signin() {
-      console.log("signin", this.email, this.password);
+      console.log('SignIn', this.email);
+
       if(!this.email) {
-        alert("전자우편을 입력하여 주십시오.");
+        alert('전자우편을 입력하여 주십시오.');
         return;
       }
       
-      if(!this.password) {
-        alert("암호를 입력하여 주십시오.");
-        return;
-      }
-      
-      firebase.auth().signInWithEmailAndPassword(this.email, this.password)
-      .then((user) => {
-        console.log("User", user)
+      const protocol = location.protocol;
+      const hostName = location.hostname;
+      const port = location.port;
+
+      let url = protocol + '//' + hostName + (port ? ':' + port : '');
+      // url += '/#/signupfinish';
+      url += '/callback/email';
+
+      console.log(url);
+      const actionCodeSettings = {
+        // URL you want to redirect back to. The domain (www.example.com) for this
+        // URL must be whitelisted in the Firebase Console.
+        // url: 'https://www.example.com/finishSignUp?cartId=1234',
+        url: url,
+        // This must be true.
+        handleCodeInApp: true,
+        // iOS: {
+        //   bundleId: 'com.example.ios'
+        // },
+        // android: {
+        //   packageName: 'com.example.android',
+        //   installApp: true,
+        //   minimumVersion: '12',
+        // },
+        // dynamicLinkDomain: 'example.page.link',
+      };
+
+      const _this = this;
+      firebase.auth().sendSignInLinkToEmail(this.email, actionCodeSettings)
+      .then(function() {
+        // The link was successfully sent. Inform the user.
+        // Save the email locally so you don't need to ask the user for it again
+        // if they open the link on the same device.
+        window.localStorage.setItem('emailForSignIn', _this.email);
+        alert("입력하신 전자우편으로 인증메일을 발송하였습니다. 전자우편을 통해서 로그인을 완료하시기 바랍니다.");
+        _this.email = '';
       })
-      .catch((error) => {
+      .catch(function(error) {
+        // Some error occurred, you can inspect the code: error.code
         console.log(error)
+        // if(error.code === "auth/invalid-email") {}
         if(error && error.message) {
           alert(error.message);
         }
-      })
+      });
     },
     signout() {
       firebase.auth().signOut().then(function() {

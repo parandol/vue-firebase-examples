@@ -62,12 +62,9 @@ export default {
     }
   },
   mounted() {
-    console.log("Email Link Callback 111111111111");
     console.log(process.env)
   },
   created() {
-    console.log("Email Link Callback 222222222222");
-    
     const _this = this;
     // Confirm the link is a sign-in with email link.
     if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
