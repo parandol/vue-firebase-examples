@@ -43,11 +43,13 @@
               color="primary"
               @click="signin"
             >SignIn</v-btn>
+            <!--
             <v-spacer />
             <v-btn
               color="accent"
               @click="signout"
             >SignOut</v-btn>
+            -->
           </v-card-actions>
 
           <v-card-text
