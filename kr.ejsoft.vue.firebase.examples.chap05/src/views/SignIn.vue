@@ -338,9 +338,8 @@ export default {
           firebase.auth().fetchSignInMethodsForEmail(email).then(function(methods) {
             console.log(methods);
 
-            // Step 3.
-            // If the user has several sign-in methods,
-            // the first method in the list will be the "recommended" method to use.
+            // If the user has several sign-in methods, the first method in the list will be the "recommended" method to use.
+            // 첫번째 방식과 연결하는 것을 추천합니다.
             if (methods[0] === 'password') {
               // Asks the user their password.
               // In real scenario, you should handle this asynchronously.
@@ -359,7 +358,7 @@ export default {
 
             // All the other cases are external providers.
             // Construct provider object for that provider.
-            // TODO: implement getProviderForProviderId.
+            // 인븡 방법에 따라 인증제공자 객체를 얻어옵니다.
             var provider = _this.getProviderForProviderId(methods[0]);
             // At this point, you should let the user know that they already has an account
             // but with a different provider, and let them validate the fact they want to
@@ -367,13 +366,15 @@ export default {
             // Sign in to provider. Note: browsers usually block popup triggered asynchronously,
             // so in real scenario you should ask the user to click on a "continue" button
             // that will trigger the signInWithPopup.
+            // 다른 방식으로 인증합니다.
             firebase.auth().signInWithPopup(provider).then(function(result) {
               // Remember that the user may have signed in with an account that has a different email
               // address than the first one. This can happen as Firebase doesn't control the provider's
               // sign in flow and the user is free to login using whichever account they own.
-              // Step 4b.
+              
               // Link to Google credential.
               // As we have access to the pending credential, we can directly call the link method.
+              // 인증이 완료되면 2개의 인증을 연결합니다.
               result.user.linkAndRetrieveDataWithCredential(credential).then(function(usercred) {
                 // Account successfully linked to the existing Firebase user.
                 _this.isSignin = true;
